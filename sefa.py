@@ -85,7 +85,7 @@ def main():
     device = torch.device('cuda')
     source_pil, source_uint8 = load_image(args.source, generator.img_resolution)
     source_image = torch.tensor(source_uint8.transpose([2, 0, 1]), device=device).unsqueeze(0).to(torch.float32)/127.5 - 1 # value range (-1, 1)
-    source_images = source_image.repeat(args.num_samples, 1, 1, 1)
+    # source_images = source_image.repeat(args.num_samples, 1, 1, 1)
 
     # Prepare codes.
     z_space_dim = generator.z_dim if gan_type == 'comodgan' else generator.z_space_dim
@@ -146,8 +146,7 @@ def main():
                     image = generator.synthesis(to_tensor(temp_code))['image']
                 elif gan_type == 'comodgan':
                     temp_code[:, layers, :] += boundary * d
-                    pdb.set_trace()
-                    image = generator.synthesis(source_images, to_tensor(temp_code))
+                    image = generator.synthesis(source_image, to_tensor(temp_code))
                 image = postprocess(image)[0]
                 vizer_1.set_cell(sem_id * (num_sam + 1) + sam_id + 1, col_id,
                                  image=image)
