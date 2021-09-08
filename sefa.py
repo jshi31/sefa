@@ -73,7 +73,7 @@ def main():
 
     # Factorize weights.
     generator = load_generator(args.model_name)
-    gan_type = parse_gan_type(generator) if args.model_name != 'comodgan' else 'comodgan'
+    gan_type = parse_gan_type(generator) 
     layers, boundaries, values = factorize_weight(generator, args.layer_idx)
 
     # Set random seed.
