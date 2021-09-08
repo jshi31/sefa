@@ -1,6 +1,7 @@
 """SeFa."""
 
 import os
+import pdb
 import argparse
 from tqdm import tqdm
 import numpy as np
@@ -144,6 +145,7 @@ def main():
                     temp_code[:, layers, :] += boundary * d
                     image = generator.synthesis(to_tensor(temp_code))['image']
                 elif gan_type == 'comodgan':
+                    pdb.set_trace()
                     temp_code[:, layers, :] += boundary * d
                     image = generator.synthesis(source_images, to_tensor(temp_code))
                 image = postprocess(image)[0]
