@@ -7,6 +7,9 @@ import numpy as np
 
 import torch
 
+import sys
+sys.path.append('CoModStyleTrans')
+
 from models import parse_gan_type
 from utils import to_tensor
 from utils import postprocess
