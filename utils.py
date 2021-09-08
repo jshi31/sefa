@@ -63,6 +63,17 @@ def load_generator(model_name):
     Raises:
         KeyError: If the input `model_name` is not in `models.MODEL_ZOO`.
     """
+    if model_name == 'comodgan':
+        network_pkl = '/home/jshi31/project/CoModStyleTrans/output/discover24/00000-discover60k-stylegan2-noaug/network-snapshot-000600.pkl'
+        print('Loading networks from "%s"...' % network_pkl)
+        device = torch.device('cuda')
+        import CoModStyleTrans.dnnlib as dnnlib
+        with dnnlib.util.open_url(network_pkl) as f:
+            generator = legacy.load_network_pkl(f)['G_ema'].to(device) # type: ignore
+        generator.eval()
+        print(f'Finish loading checkpoint.')
+        return generator
+
     if model_name not in MODEL_ZOO:
         raise KeyError(f'Unknown model name `{model_name}`!')
 

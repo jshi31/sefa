@@ -13,6 +13,7 @@ from utils import postprocess
 from utils import load_generator
 from utils import factorize_weight
 from utils import HtmlPageVisualizer
+from CoModStyleTrans.projector import load_image
 
 
 def parse_args():
@@ -24,6 +25,7 @@ def parse_args():
     parser.add_argument('--save_dir', type=str, default='results',
                         help='Directory to save the visualization pages. '
                              '(default: %(default)s)')
+    parser.add_argument('--source', type=str, help='image path')
     parser.add_argument('-L', '--layer_idx', type=str, default='all',
                         help='Indices of layers to interpret. '
                              '(default: %(default)s)')
@@ -68,12 +70,18 @@ def main():
 
     # Factorize weights.
     generator = load_generator(args.model_name)
-    gan_type = parse_gan_type(generator)
+    gan_type = parse_gan_type(generator) if args.model_name != 'comodgan' else 'comodgan'
     layers, boundaries, values = factorize_weight(generator, args.layer_idx)
 
     # Set random seed.
     np.random.seed(args.seed)
     torch.manual_seed(args.seed)
+
+    # Load image
+    device = torch.device('cuda')
+    source_pil, source_uint8 = load_image(args.source, generator.img_resolution)
+    source_image = torch.tensor(source_uint8.transpose([2, 0, 1]), device=device).unsqueeze(0).to(torch.float32)/127.5 - 1 # value range (-1, 1)
+    source_images = source_image.repeat(args.num_samples, 1, 1, 1)
 
     # Prepare codes.
     codes = torch.randn(args.num_samples, generator.z_space_dim).cuda()
@@ -84,6 +92,8 @@ def main():
         codes = generator.truncation(codes,
                                      trunc_psi=args.trunc_psi,
                                      trunc_layers=args.trunc_layers)
+    elif gan_type == 'comodgan':
+        codes = generator.mapping(codes, None)
     codes = codes.detach().cpu().numpy()
 
     # Generate visualization pages.
@@ -129,6 +139,9 @@ def main():
                 elif gan_type in ['stylegan', 'stylegan2']:
                     temp_code[:, layers, :] += boundary * d
                     image = generator.synthesis(to_tensor(temp_code))['image']
+                elif gan_type == 'comodgan':
+                    temp_code[:, layers, :] += boundary * d
+                    image = generator.synthesis(source_images, to_tensor(temp_code))
                 image = postprocess(image)[0]
                 vizer_1.set_cell(sem_id * (num_sam + 1) + sam_id + 1, col_id,
                                  image=image)
