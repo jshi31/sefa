@@ -87,7 +87,8 @@ def main():
     source_images = source_image.repeat(args.num_samples, 1, 1, 1)
 
     # Prepare codes.
-    codes = torch.randn(args.num_samples, generator.z_space_dim).cuda()
+    z_space_dim = generator.z_dim if gan_type == 'comodgan' else generator.z_space_dim
+    codes = torch.randn(args.num_samples, z_space_dim).cuda()
     if gan_type == 'pggan':
         codes = generator.layer0.pixel_norm(codes)
     elif gan_type in ['stylegan', 'stylegan2']:
