@@ -146,6 +146,7 @@ def main():
                     image = generator.synthesis(to_tensor(temp_code))['image']
                 elif gan_type == 'comodgan':
                     temp_code[:, layers, :] += boundary * d
+                    pdb.set_trace()
                     image = generator.synthesis(source_images, to_tensor(temp_code))
                 image = postprocess(image)[0]
                 vizer_1.set_cell(sem_id * (num_sam + 1) + sam_id + 1, col_id,
