@@ -12,6 +12,8 @@ from models import MODEL_ZOO
 from models import build_generator
 from models import parse_gan_type
 
+import CoModStyleTrans.legacy as legacy
+
 __all__ = ['postprocess', 'load_generator', 'factorize_weight',
            'HtmlPageVisualizer']
 
