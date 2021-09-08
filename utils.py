@@ -189,11 +189,11 @@ def factorize_weight(generator, layer_idx='all'):
                                    max_val=generator.num_layers - 1)
     elif gan_type == 'comodgan':
         if layer_idx == 'all':
-            layers = list(range(1, generator.num_ws + 1))
+            layers = list(range(generator.num_ws))
         else:
             layers = parse_indices(layer_idx,
-                                   min_val=1,
-                                   max_val=generator.num_ws)
+                                   min_val=0,
+                                   max_val=generator.num_ws - 1)
 
     # Factorize semantics from weight.
     weights = []
@@ -207,6 +207,7 @@ def factorize_weight(generator, layer_idx='all'):
         elif gan_type in ['stylegan', 'stylegan2']:
             weight = generator.synthesis.__getattr__(layer_name).style.weight.T
         elif gan_type == 'comodgan':
+            idx = idx + 1  # shift, because here assume idx start from 1, but actually idx start from 0
             # map layer idx to res
             ress = generator.synthesis.block_resolutions
             res = ress[idx // 2] if idx < (np.log2(ress[-1]) - 1) * 2 else ress[-1]
