@@ -214,12 +214,11 @@ def factorize_weight(generator, layer_idx='all'):
             conv_id = idx % 2 
             block = generator.synthesis.__getattr__(f'b{res}')
             if idx < (np.log2(ress[-1]) - 1) * 2:
-                weight = block.__getattr__(f'conv{conv_id}').affine.weight.T
+                weight = block.__getattr__(f'conv{conv_id}').affine.weight[:, :generator.w_dim].T
             else:
-                weight = block.torgb.affine.weight.T
+                weight = block.torgb.affine.weight[:, :generator.w_dim].T
         weights.append(weight.cpu().detach().numpy())
     weight = np.concatenate(weights, axis=1).astype(np.float32)
-    pdb.set_trace()
     weight = weight / np.linalg.norm(weight, axis=0, keepdims=True)
     eigen_values, eigen_vectors = np.linalg.eig(weight.dot(weight.T))
 
