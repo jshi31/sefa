@@ -8,6 +8,7 @@ from .stylegan_generator import StyleGANGenerator
 from .stylegan_discriminator import StyleGANDiscriminator
 from .stylegan2_generator import StyleGAN2Generator
 from .stylegan2_discriminator import StyleGAN2Discriminator
+from CoModStyleTrans.training.networks import Generator as CoModGANGenerator
 
 __all__ = [
     'MODEL_ZOO', 'PGGANGenerator', 'PGGANDiscriminator', 'StyleGANGenerator',
@@ -111,4 +112,6 @@ def parse_gan_type(module):
         return 'stylegan'
     if isinstance(module, (StyleGAN2Generator, StyleGAN2Discriminator)):
         return 'stylegan2'
+    if isinstance(module, CoModGANGenerator):
+        return 'comodgan'
     raise ValueError(f'Unable to parse GAN type from type `{type(module)}`!')
