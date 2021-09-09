@@ -80,6 +80,7 @@ def main():
         'Layers to Interpret',
         ['all', '0-1', '2-5', '6-13'])
     layers, boundaries, eigen_values = factorize_model(model, layer_idx)
+    print('finish factorization')
 
     num_semantics = st.sidebar.number_input(
         'Number of semantics', value=10, min_value=0, max_value=None, step=1)
