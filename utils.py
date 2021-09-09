@@ -6,6 +6,7 @@ import pdb
 import subprocess
 import cv2
 import numpy as np
+import pickle
 
 import torch
 
@@ -71,7 +72,8 @@ def load_generator(model_name):
         print('Loading networks from "%s"...' % network_pkl)
         device = torch.device('cuda')
         with dnnlib.util.open_url(network_pkl) as f:
-            generator = legacy.load_network_pkl(f)['G_ema'].to(device) # type: ignore
+            generator = pickle.load(f)['G_ema'].to(device) # type: ignore
+            # generator = legacy.load_network_pkl(f)['G_ema'].to(device) # type: ignore
         generator.eval()
         print(f'Finish loading checkpoint.')
         return generator
