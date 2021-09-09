@@ -1,5 +1,7 @@
 # python 3.7
 """Demo."""
+import sys
+sys.path.append('CoModStyleTrans')
 
 import numpy as np
 import torch
