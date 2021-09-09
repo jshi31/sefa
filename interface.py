@@ -61,10 +61,13 @@ def main():
     st.sidebar.title('Options')
     reset = st.sidebar.button('Reset')
 
+    # model_name = st.sidebar.selectbox(
+    #     'Model to Interpret',
+    #     ['stylegan_animeface512', 'stylegan_car512', 'stylegan_cat256',
+    #      'pggan_celebahq1024'])
     model_name = st.sidebar.selectbox(
         'Model to Interpret',
-        ['stylegan_animeface512', 'stylegan_car512', 'stylegan_cat256',
-         'pggan_celebahq1024'])
+        ['comodgan128'])
 
     model = get_model(model_name)
     gan_type = parse_gan_type(model)
@@ -81,6 +84,8 @@ def main():
     elif gan_type == 'stylegan':
         max_step = 2.0
     elif gan_type == 'stylegan2':
+        max_step = 15.0
+    elif gan_type == 'comodgan':
         max_step = 15.0
     for sem_idx in steps:
         eigen_value = eigen_values[sem_idx]

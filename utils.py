@@ -66,7 +66,7 @@ def load_generator(model_name):
     Raises:
         KeyError: If the input `model_name` is not in `models.MODEL_ZOO`.
     """
-    if model_name == 'comodgan':
+    if model_name in ['comodgan128']:
         network_pkl = '/home/jshi31/project/CoModStyleTrans/output/discover24/00000-discover60k-stylegan2-noaug/network-snapshot-003600.pkl'
         print('Loading networks from "%s"...' % network_pkl)
         device = torch.device('cuda')
