@@ -76,7 +76,6 @@ def main():
 
     model = get_model(model_name)
     print(model)
-    pdb.set_trace()
     gan_type = parse_gan_type(model) if 'comodgan' not in model_name else 'comodgan'
     layer_idx = st.sidebar.selectbox(
         'Layers to Interpret',
