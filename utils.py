@@ -14,6 +14,7 @@ from models import build_generator
 from models import parse_gan_type
 
 import CoModStyleTrans.legacy as legacy
+import CoModStyleTrans.dnnlib as dnnlib
 
 __all__ = ['postprocess', 'load_generator', 'factorize_weight',
            'HtmlPageVisualizer']
@@ -70,7 +71,6 @@ def load_generator(model_name):
         network_pkl = '/home/jshi31/project/CoModStyleTrans/output/discover24/00000-discover60k-stylegan2-noaug/network-snapshot-003600.pkl'
         print('Loading networks from "%s"...' % network_pkl)
         device = torch.device('cuda')
-        import CoModStyleTrans.dnnlib as dnnlib
         with dnnlib.util.open_url(network_pkl) as f:
             generator = legacy.load_network_pkl(f)['G_ema'].to(device) # type: ignore
         generator.eval()
