@@ -2,7 +2,7 @@
 """Demo."""
 import sys
 sys.path.append('CoModStyleTrans')
-
+import pdb
 import numpy as np
 import torch
 import streamlit as st
@@ -75,6 +75,8 @@ def main():
         ['comodgan128'])
 
     model = get_model(model_name)
+    print(model)
+    pdb.set_trace()
     gan_type = parse_gan_type(model)
     layer_idx = st.sidebar.selectbox(
         'Layers to Interpret',
