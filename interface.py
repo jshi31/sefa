@@ -12,6 +12,7 @@ from utils import postprocess
 from utils import load_generator
 from utils import factorize_weight
 
+from CoModStyleTrans.projector import load_image
 
 @st.cache(allow_output_mutation=True, show_spinner=False)
 def get_model(model_name):
@@ -45,12 +46,14 @@ def sample(model, gan_type, num=1):
 
 
 @st.cache(allow_output_mutation=True, show_spinner=False)
-def synthesize(model, gan_type, code):
+def synthesize(model, source_image, gan_type, code):
     """Synthesizes an image with the give code."""
     if gan_type == 'pggan':
         image = model(to_tensor(code))['image']
     elif gan_type in ['stylegan', 'stylegan2']:
         image = model.synthesis(to_tensor(code))['image']
+    elif gan_type == 'comodgan':
+        image = model.synthesis(source_image, to_tensor(code))
     image = postprocess(image)[0]
     return image
 
@@ -99,6 +102,10 @@ def main():
     image_placeholder = st.empty()
     button_placeholder = st.empty()
 
+    device = torch.device('cuda')
+    source_pil, source_uint8 = load_image('/home/jshi31/dataset/discover60k/after/0bb9a0eb-bcbe-4ca0-9566-7359129f7742_proxy.jpg', model.img_resolution)
+    source_image = torch.tensor(source_uint8.transpose([2, 0, 1]), device=device).unsqueeze(0).to(torch.float32)/127.5 - 1 # value range (-1, 1)
+
     try:
         base_codes = np.load(f'latent_codes/{model_name}_latents.npy')
     except FileNotFoundError:
@@ -123,9 +130,9 @@ def main():
     for sem_idx, step in steps.items():
         if gan_type == 'pggan':
             code += boundaries[sem_idx:sem_idx + 1] * step
-        elif gan_type in ['stylegan', 'stylegan2']:
+        elif gan_type in ['stylegan', 'stylegan2', 'comodgan']:
             code[:, layers, :] += boundaries[sem_idx:sem_idx + 1] * step
-    image = synthesize(model, gan_type, code)
+    image = synthesize(model, source_image, gan_type, code)
     image_placeholder.image(image / 255.0)
 
 
