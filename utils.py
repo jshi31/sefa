@@ -74,7 +74,6 @@ def load_generator(model_name):
         with dnnlib.util.open_url(network_pkl) as f:
             generator = pickle.load(f)['G_ema'].to(device) # type: ignore
             # generator = legacy.load_network_pkl(f)['G_ema'].to(device) # type: ignore
-        pdb.set_trace()
         generator.eval()
         print(f'Finish loading checkpoint.')
         return generator
