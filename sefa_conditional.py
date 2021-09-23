@@ -3,7 +3,7 @@
 import os
 import pdb
 import argparse
-import glob
+from glob import glob
 from tqdm import tqdm
 import numpy as np
 import json
