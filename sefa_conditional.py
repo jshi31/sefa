@@ -3,8 +3,10 @@
 import os
 import pdb
 import argparse
+import glob
 from tqdm import tqdm
 import numpy as np
+import json
 
 import torch
 
@@ -29,7 +31,8 @@ def parse_args():
     parser.add_argument('--save_dir', type=str, default='results',
                         help='Directory to save the visualization pages. '
                              '(default: %(default)s)')
-    parser.add_argument('--source_dir', type=str, help='image dir')
+    parser.add_argument('--source_dir', type=str, help='image directory')
+    parser.add_argument('--w_dir', type=str, help='w0 directory')
     parser.add_argument('-L', '--layer_idx', type=str, default='all',
                         help='Indices of layers to interpret. '
                              '(default: %(default)s)')
@@ -81,11 +84,25 @@ def main():
     np.random.seed(args.seed)
     torch.manual_seed(args.seed)
 
+    # Prepare image with overlap of w path
+    # start the glob to grab all the code list
+    z_names = [v.split('/')[-1].split('.')[0] for v in sorted(glob(os.path.join(args.w_dir, '*')))]
+    z_names = np.random.choice(z_names, args.num_samples, replace=False)
+    input_dir = '/home/jshi31/dataset/discover60k/before'
+    ws = []
+    for name in z_names:
+        w_path = os.path.join(args.w_dir, name + '.npz')
+        w = np.load(w_path)['w'][:, 0]  # (1, 512)
+        ws.append(w)
+    ws = np.concatenate(ws, axis=0)  # (N, 512)
+    print('totally {} w'.format(len(ws)))
+
     # Load image
     device = torch.device('cuda')
-    source_pil, source_uint8 = load_image(args.source, generator.img_resolution)
-    source_image = torch.tensor(source_uint8.transpose([2, 0, 1]), device=device).unsqueeze(0).to(torch.float32)/127.5 - 1 # value range (-1, 1)
-    # source_images = source_image.repeat(args.num_samples, 1, 1, 1)
+    sources = [os.path.join(input_dir, name + '.jpg') for name in z_names]
+    sources_uint8 = [load_image(source, generator.img_resolution)[1] for source in sources]
+    source_images = [torch.tensor(source_uint8.transpose([2, 0, 1]), device=device).unsqueeze(0).to(torch.float32)/127.5 - 1 for source_uint8 in sources_uint8] # value range (-1, 1)
+    source_images = torch.cat(source_images, dim=0)
 
     # Prepare codes.
     z_space_dim = generator.z_dim if gan_type == 'comodgan' else generator.z_space_dim
@@ -98,6 +115,7 @@ def main():
                                      trunc_psi=args.trunc_psi,
                                      trunc_layers=args.trunc_layers)
     elif gan_type == 'comodgan':
+        codes = torch.from_numpy(ws, dtype=torch.float32).to(device)
         codes = generator.mapping(codes, None)
     codes = codes.detach().cpu().numpy()
 
@@ -146,7 +164,7 @@ def main():
                     image = generator.synthesis(to_tensor(temp_code))['image']
                 elif gan_type == 'comodgan':
                     temp_code[:, layers, :] += boundary * d
-                    image = generator.synthesis(source_image, to_tensor(temp_code))
+                    image = generator.synthesis(source_images[sam_id:sam_id+1], to_tensor(temp_code))
                 image = postprocess(image)[0]
                 vizer_1.set_cell(sem_id * (num_sam + 1) + sam_id + 1, col_id,
                                  image=image)
