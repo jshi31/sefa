@@ -115,7 +115,7 @@ def main():
                                      trunc_psi=args.trunc_psi,
                                      trunc_layers=args.trunc_layers)
     elif gan_type == 'comodgan':
-        codes = torch.from_numpy(ws, dtype=torch.float32).to(device)
+        codes = torch.from_numpy(ws).float().to(device)
         codes = generator.mapping(codes, None)
     codes = codes.detach().cpu().numpy()
 
