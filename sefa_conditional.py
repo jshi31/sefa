@@ -87,7 +87,6 @@ def main():
     # Prepare image with overlap of w path
     # start the glob to grab all the code list
     z_names = [v.split('/')[-1].split('.')[0] for v in sorted(glob(os.path.join(args.w_dir, '*')))]
-    pdb.set_trace()
     z_names = np.random.choice(z_names, args.num_samples, replace=False)
     input_dir = '/home/jshi31/dataset/discover60k/before'
     ws = []
