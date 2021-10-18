@@ -100,6 +100,7 @@ def main():
     # Load image
     device = torch.device('cuda')
     sources = [os.path.join(input_dir, name + '.jpg') for name in z_names]
+    print('source images', sources)
     sources_uint8 = [load_image(source, generator.img_resolution)[1] for source in sources]
     source_images = [torch.tensor(source_uint8.transpose([2, 0, 1]), device=device).unsqueeze(0).to(torch.float32)/127.5 - 1 for source_uint8 in sources_uint8] # value range (-1, 1)
     source_images = torch.cat(source_images, dim=0)
