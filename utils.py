@@ -70,7 +70,7 @@ def load_generator(model_name):
     if model_name in ['comodgan128', 'comodgan256', 'comodgan512']:
         if model_name == 'comodgan128':
             network_pkl = '/home/jshi31/project/CoModStyleTrans/output/discover24/00000-discover60k-stylegan2-noaug/network-snapshot-003600.pkl'
-        elif model_name == 'comodgan=256':
+        elif model_name == 'comodgan256':
             network_pkl = '/home/jshi31/project/CoModStyleTrans/output/discover27/00004-discover60k-comodgan256-noaug/network-snapshot-003686.pkl'
         elif model_name == 'comodgan512':
             network_pkl = '/home/jshi31/project/CoModStyleTrans/output/discover28/0000-discover60k-comodgan5124-noaug/network-snapshot-005241.pkl'
