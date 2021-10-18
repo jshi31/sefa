@@ -92,9 +92,9 @@ def main():
     ws = []
     for name in z_names:
         w_path = os.path.join(args.w_dir, name + '.npz')
-        w = np.load(w_path)['w'][:, 0]  # (1, 512)
+        w = np.load(w_path)['w']  # (1, num_ws, 512)
         ws.append(w)
-    ws = np.concatenate(ws, axis=0)  # (N, 512)
+    ws = np.concatenate(ws, axis=0)  # (N, num_ws, 512)
     print('totally {} w'.format(len(ws)))
 
     # Load image
