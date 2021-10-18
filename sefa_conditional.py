@@ -117,7 +117,7 @@ def main():
                                      trunc_layers=args.trunc_layers)
     elif gan_type == 'comodgan':
         codes = torch.from_numpy(ws).float().to(device)
-        codes = generator.mapping(codes, None)
+        # codes = generator.mapping(codes, None)
     codes = codes.detach().cpu().numpy()
 
     # Generate visualization pages.
